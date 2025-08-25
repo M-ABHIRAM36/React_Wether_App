@@ -1,0 +1,12 @@
+.infoBox{
+    text-align: center;
+}
+
+.cardContainer{
+    display: flex; 
+    justify-content: center;
+    
+}
+.subCard{
+    width: 345px;
+}
