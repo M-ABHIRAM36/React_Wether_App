@@ -3,8 +3,8 @@ import Button from '@mui/material/Button';
 import "./SearchBox.css";
 import { useState } from 'react';
 export default function SearchBox({updateInfo}){
-    const API_URL = MAIN_API_URL;
-    const API_KEY = MAIN_API_KEY;
+    const API_URL = process.env.MAIN_API_URL;
+    const API_KEY = process.env.MAIN_API_KEY;
     let [city,SetCity] = useState("");
     let [error,SetError] = useState(false);
     let getWeatherInfo = async ()=>{
