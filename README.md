@@ -24,9 +24,21 @@ Real-time API integration
 
 ---
 
+## ⚙️ Environment Setup
+Create a `.env` in the project root with:
+```bash
+VITE_MAIN_API_URL=https://api.openweathermap.org/data/2.5/weather
+VITE_MAIN_API_KEY=YOUR_API_KEY
+```
+Note: `.env` is already git-ignored to keep your API key private. Commit a `.env.example` instead when sharing.
+
+---
+
 ## ⚡ How to Run Locally
 ```bash
-git clone https://github.com/M-ABHIRAM36/React_Wether_App.git
-cd React_Wether_App
+git clone <your-repo-url>
+cd React_Wether_App-main
 npm install
-npm start
+npm run dev
+```
+Open the printed Local URL (e.g., http://localhost:5173/).

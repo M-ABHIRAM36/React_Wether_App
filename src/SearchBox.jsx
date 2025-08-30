@@ -3,12 +3,15 @@ import Button from '@mui/material/Button';
 import "./SearchBox.css";
 import { useState } from 'react';
 export default function SearchBox({updateInfo}){
-    const API_URL = process.env.MAIN_API_URL;
-    const API_KEY = process.env.MAIN_API_KEY;
+    const API_URL = import.meta.env.VITE_MAIN_API_URL;
+    const API_KEY = import.meta.env.VITE_MAIN_API_KEY;
     let [city,SetCity] = useState("");
     let [error,SetError] = useState(false);
     let getWeatherInfo = async ()=>{
         try {
+            if(!API_URL || !API_KEY) {
+                throw new Error("Missing API configuration");
+            }
             let response = await fetch(`${API_URL}?q=${city}&appid=${API_KEY}&units=metric`);
             let jsonResponse = await response.json();
             // console.log(jsonResponse);// here full details of weather are there      ---> means its an main object..
@@ -21,6 +24,8 @@ export default function SearchBox({updateInfo}){
                 lon:jsonResponse.coord.lon,
                 lan:jsonResponse.coord.lat,
                 weather:jsonResponse.weather[0].description,
+                weatherMain: jsonResponse.weather[0].main,
+                weatherIcon: jsonResponse.weather[0].icon,
                 windSpeed : jsonResponse.wind.speed,
                 windDeg : jsonResponse.wind.deg,
             }
