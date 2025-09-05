@@ -1,0 +1,51 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+/node_modules
+
+# Environment files
+.env
+.env.*.local
+
+# Build output
+dist
+dist-ssr
+build/
+
+# Coverage reports
+coverage/
+
+# Local files
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System files
+Thumbs.db
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Java-related
+*.class
+*.jar
+*.war
+*.ear
+target/
