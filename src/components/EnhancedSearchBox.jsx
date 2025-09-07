@@ -20,9 +20,11 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { Country, State } from 'country-state-city';
+import { usePreferences } from '../context/PreferencesContext';
 import axios from 'axios';
 
 const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
+  const { preferences } = usePreferences();
   const [searchType, setSearchType] = useState('city'); // 'city' or 'coordinates'
   const [cityName, setCityName] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -37,15 +39,22 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
   const countries = Country.getAllCountries();
 
   useEffect(() => {
-    // Load recent searches from localStorage
+    // Load recent searches from localStorage (objects: {label, lat, lon})
     const saved = localStorage.getItem('weatherApp_recentSearches');
     if (saved) {
-      setRecentSearches(JSON.parse(saved));
+      try {
+        const parsed = JSON.parse(saved);
+        setRecentSearches(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        setRecentSearches([]);
+      }
     }
   }, []);
 
-  const saveRecentSearch = (searchQuery) => {
-    const updated = [searchQuery, ...recentSearches.filter(item => item !== searchQuery)].slice(0, 5);
+  const saveRecentSearch = (item) => {
+    // item: { label, lat, lon }
+    const exists = recentSearches.find(r => r.lat === item.lat && r.lon === item.lon);
+    const updated = [item, ...recentSearches.filter(r => !(r.lat === item.lat && r.lon === item.lon))].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem('weatherApp_recentSearches', JSON.stringify(updated));
   };
@@ -160,8 +169,9 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
   const getWeatherByCoordinates = async (lat, lon) => {
     const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || process.env.MAIN_API_KEY;
     const API_URL = import.meta.env.VITE_WEATHER_API_URL || process.env.MAIN_API_URL;
-    
-    const response = await axios.get(`${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+
+    const units = preferences?.temperatureUnit === 'fahrenheit' ? 'imperial' : (preferences?.temperatureUnit === 'kelvin' ? 'standard' : 'metric');
+    const response = await axios.get(`${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${units}`);
     
     const weatherData = {
       city: response.data.name,
@@ -185,7 +195,7 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
     };
     
     onWeatherUpdate(weatherData);
-    saveRecentSearch(`${weatherData.city}, ${weatherData.country}`);
+    saveRecentSearch({ label: `${weatherData.city}, ${weatherData.country}` , lat, lon });
   };
 
   const getWeatherByCity = async () => {
@@ -201,7 +211,8 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
       query += `,${selectedState.isoCode}`;
     }
 
-    const response = await axios.get(`${API_URL}?q=${query}&appid=${API_KEY}&units=metric`);
+    const units = preferences?.temperatureUnit === 'fahrenheit' ? 'imperial' : (preferences?.temperatureUnit === 'kelvin' ? 'standard' : 'metric');
+    const response = await axios.get(`${API_URL}?q=${encodeURIComponent(query)}&appid=${API_KEY}&units=${units}`);
     
     const weatherData = {
       city: response.data.name,
@@ -225,7 +236,7 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
     };
     
     onWeatherUpdate(weatherData);
-    saveRecentSearch(query);
+    saveRecentSearch({ label: `${weatherData.city}, ${weatherData.country}`, lat: weatherData.lat, lon: weatherData.lon });
   };
 
   const handleCitySuggestionSelect = async (suggestion) => {
@@ -291,39 +302,48 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
     }
   };
 
-  const handleRecentSearch = async (searchQuery) => {
-    setCityName(searchQuery);
+  const handleRecentSearch = async (searchItem) => {
+    // searchItem: {label, lat, lon} or legacy string
+    const item = typeof searchItem === 'string' ? null : searchItem;
+    if (!item) {
+      setCityName(searchItem);
+    } else {
+      setCityName(item.label);
+    }
     setLoading(true);
     setError('');
     
     try {
-      const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || process.env.MAIN_API_KEY;
-      const API_URL = import.meta.env.VITE_WEATHER_API_URL || process.env.MAIN_API_URL;
-      
-      const response = await axios.get(`${API_URL}?q=${searchQuery}&appid=${API_KEY}&units=metric`);
-      
-      const weatherData = {
-        city: response.data.name,
-        country: response.data.sys.country,
-        temp: response.data.main.temp,
-        temMin: response.data.main.temp_min,
-        temMax: response.data.main.temp_max,
-        humidity: response.data.main.humidity,
-        pressure: response.data.main.pressure,
-        lon: response.data.coord.lon,
-        lat: response.data.coord.lat,
-        weather: response.data.weather[0].description,
-        weatherMain: response.data.weather[0].main,
-        windSpeed: response.data.wind?.speed || 0,
-        windDeg: response.data.wind?.deg || 0,
-        visibility: response.data.visibility ? response.data.visibility / 1000 : 0,
-        cloudiness: response.data.clouds?.all || 0,
-        sunrise: response.data.sys.sunrise,
-        sunset: response.data.sys.sunset,
-        timezone: response.data.timezone
-      };
-      
-      onWeatherUpdate(weatherData);
+      if (item) {
+        await getWeatherByCoordinates(item.lat, item.lon);
+      } else {
+        const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || process.env.MAIN_API_KEY;
+        const API_URL = import.meta.env.VITE_WEATHER_API_URL || process.env.MAIN_API_URL;
+        const units = preferences?.temperatureUnit === 'fahrenheit' ? 'imperial' : (preferences?.temperatureUnit === 'kelvin' ? 'standard' : 'metric');
+        const response = await axios.get(`${API_URL}?q=${encodeURIComponent(searchItem)}&appid=${API_KEY}&units=${units}`);
+        const weatherData = {
+          city: response.data.name,
+          country: response.data.sys.country,
+          temp: response.data.main.temp,
+          temMin: response.data.main.temp_min,
+          temMax: response.data.main.temp_max,
+          humidity: response.data.main.humidity,
+          pressure: response.data.main.pressure,
+          lon: response.data.coord.lon,
+          lat: response.data.coord.lat,
+          weather: response.data.weather[0].description,
+          weatherMain: response.data.weather[0].main,
+          windSpeed: response.data.wind?.speed || 0,
+          windDeg: response.data.wind?.deg || 0,
+          visibility: response.data.visibility ? response.data.visibility / 1000 : 0,
+          cloudiness: response.data.clouds?.all || 0,
+          sunrise: response.data.sys.sunrise,
+          sunset: response.data.sys.sunset,
+          timezone: response.data.timezone
+        };
+        onWeatherUpdate(weatherData);
+        saveRecentSearch({ label: `${weatherData.city}, ${weatherData.country}`, lat: weatherData.lat, lon: weatherData.lon });
+      }
       setCityName('');
     } catch (err) {
       setError('Failed to get weather data for recent search');
@@ -504,7 +524,7 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
               {recentSearches.map((search, index) => (
                 <Chip
                   key={index}
-                  label={search}
+                  label={search.label || search}
                   onClick={() => handleRecentSearch(search)}
                   variant="outlined"
                   sx={{ cursor: 'pointer' }}
