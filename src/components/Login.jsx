@@ -28,6 +28,7 @@ const Login = ({ onSwitchToSignup }) => {
     email: '',
     password: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,10 +41,33 @@ const Login = ({ onSwitchToSignup }) => {
       [e.target.name]: e.target.value,
     });
     setError('');
+    // Clear field-level error as user types
+    const { name } = e.target;
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const validate = () => {
+    const nextErrors = { email: '', password: '' };
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      nextErrors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email)) {
+      nextErrors.email = 'Enter a valid email address';
+    }
+
+    if (!formData.password) {
+      nextErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      nextErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setFieldErrors(nextErrors);
+    return !nextErrors.email && !nextErrors.password;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     setError('');
 
@@ -133,6 +157,8 @@ const Login = ({ onSwitchToSignup }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                error={Boolean(fieldErrors.email)}
+                helperText={fieldErrors.email || ' '}
                 sx={{ mb: 2 }}
                 InputProps={{
                   startAdornment: (
@@ -151,6 +177,8 @@ const Login = ({ onSwitchToSignup }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                error={Boolean(fieldErrors.password)}
+                helperText={fieldErrors.password || ' '}
                 sx={{ mb: 3 }}
                 InputProps={{
                   startAdornment: (
