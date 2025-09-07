@@ -94,6 +94,26 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
   const weatherBg = getWeatherBackground(weather, temp);
   const tzLabel = formatUtcOffset(timezone);
 
+  const regionToLocale = (region) => {
+    switch (region) {
+      case 'us':
+        return 'en-US';
+      case 'eu':
+        return 'en-GB';
+      case 'asia':
+        return 'en-IN';
+      default:
+        return undefined; // let browser decide
+    }
+  };
+
+  const formatTimeWithPrefs = (ts) => {
+    const date = new Date((ts + timezone) * 1000);
+    const hour12 = preferences?.timeFormat === '12h';
+    const locale = regionToLocale(preferences?.region);
+    return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12 });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -257,7 +277,7 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
                       <Typography variant="body2">Sunrise</Typography>
                     </Box>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {formatTime(sunrise, timezone)}
+                      {formatTimeWithPrefs(sunrise)}
                     </Typography>
                   </Box>
                   
@@ -267,7 +287,7 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
                       <Typography variant="body2">Sunset</Typography>
                     </Box>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {formatTime(sunset, timezone)}
+                      {formatTimeWithPrefs(sunset)}
                     </Typography>
                   </Box>
                 </CardContent>
