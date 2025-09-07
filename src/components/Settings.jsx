@@ -104,7 +104,7 @@ const StyledFormControl = ({ children, ...props }) => (
 );
 
 const Settings = ({ onClose }) => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, changePassword } = useAuth();
   const { preferences, updatePreference, resetAllPreferences } = usePreferences();
   const [activeTab, setActiveTab] = useState('profile');
   
@@ -147,17 +147,45 @@ const Settings = ({ onClose }) => {
     setSuccess('');
 
     try {
+      // Validate inputs (same rules as signup)
+      const nameRegex = /^[A-Za-z][A-Za-z\s.'-]{1,48}$/; // 2-49 chars, letters first
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      const trimmedName = (profileData.name || '').trim();
+      const normalizedEmail = (profileData.email || '').trim();
+
+      if (!trimmedName || !normalizedEmail) {
+        setError('Please fill all fields');
+        setLoading(false);
+        return;
+      }
+      if (!nameRegex.test(trimmedName)) {
+        setError('Enter a valid full name');
+        setLoading(false);
+        return;
+      }
+      if (!emailRegex.test(normalizedEmail)) {
+        setError('Enter a valid email address');
+        setLoading(false);
+        return;
+      }
+      const localPart = normalizedEmail.split('@')[0];
+      if (!/[A-Za-z]/.test(localPart)) {
+        setError('Email must include letters before @');
+        setLoading(false);
+        return;
+      }
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Update user context (in real app, this would be an API call)
       if (updateUser) {
-        updateUser({ ...user, ...profileData });
+        updateUser({ ...user, name: trimmedName, email: normalizedEmail });
       }
       
       // Update localStorage
       const userData = JSON.parse(localStorage.getItem('weatherAppUser') || '{}');
-      const updatedUser = { ...userData, ...profileData };
+      const updatedUser = { ...userData, name: trimmedName, email: normalizedEmail };
       localStorage.setItem('weatherAppUser', JSON.stringify(updatedUser));
       
       setSuccess('Profile updated successfully!');
@@ -194,9 +222,7 @@ const Settings = ({ onClose }) => {
     }
 
     try {
-      // Simulate API call for password change
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await changePassword(passwordData.currentPassword, passwordData.newPassword);
       setSuccess('Password changed successfully!');
       setPasswordData({
         currentPassword: '',
@@ -204,7 +230,7 @@ const Settings = ({ onClose }) => {
         confirmPassword: '',
       });
     } catch (err) {
-      setError('Failed to change password. Please try again.');
+      setError(err.message || 'Failed to change password. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -267,7 +293,8 @@ const Settings = ({ onClose }) => {
                   label="Email Address"
                   type="email"
                   value={profileData.email}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={() => {}}
+                  disabled
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
