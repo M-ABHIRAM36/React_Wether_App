@@ -45,6 +45,18 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
   // Get reactive preferences from context
   const { preferences } = usePreferences();
   const { temperatureUnit, windUnit, pressureUnit, distanceUnit } = preferences;
+  const windUnitLabel = windUnit === 'mph' ? 'mph' : windUnit === 'ms' ? 'm/s' : windUnit === 'knots' ? 'kn' : 'km/h';
+  const pressureUnitLabel = pressureUnit === 'inhg' ? 'inHg' : pressureUnit === 'mmhg' ? 'mmHg' : pressureUnit === 'mbar' ? 'mbar' : 'hPa';
+  const distanceUnitLabel = distanceUnit === 'miles' ? 'mi' : distanceUnit === 'meters' ? 'm' : 'km';
+  const formatUtcOffset = (offsetSeconds = 0) => {
+    const sign = offsetSeconds >= 0 ? '+' : '-';
+    const abs = Math.abs(offsetSeconds);
+    const hours = Math.floor(abs / 3600);
+    const minutes = Math.floor((abs % 3600) / 60);
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    return `${sign}${hh}:${mm}`;
+  };
   
   if (!weatherData) {
     return (
@@ -80,6 +92,7 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
   const weatherAdvice = getWeatherAdvice(weatherData);
   const temperatureDesc = getTemperatureDescription(temp);
   const weatherBg = getWeatherBackground(weather, temp);
+  const tzLabel = formatUtcOffset(timezone);
 
   return (
     <motion.div
@@ -190,7 +203,7 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
                     {formatWindSpeed(windSpeed, windUnit)}
                   </Typography>
                   <Typography variant="caption">
-                    Wind {getWindDirection(windDeg)}
+                    Wind {getWindDirection(windDeg)} ({windUnitLabel})
                   </Typography>
                 </CardContent>
               </Card>
@@ -204,7 +217,7 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
                     {formatPressure(pressure, pressureUnit)}
                   </Typography>
                   <Typography variant="caption">
-                    Pressure
+                    Pressure ({pressureUnitLabel})
                   </Typography>
                 </CardContent>
               </Card>
@@ -218,7 +231,7 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
                     {formatDistance(visibility, distanceUnit)}
                   </Typography>
                   <Typography variant="caption">
-                    Visibility
+                    Visibility ({distanceUnitLabel})
                   </Typography>
                 </CardContent>
               </Card>
@@ -233,6 +246,9 @@ const EnhancedInfoBox = ({ weatherData, loading }) => {
                 <CardContent sx={{ p: 2 }}>
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                     Sun Times
+                  </Typography>
+                  <Typography variant="caption" sx={{ display: 'block', mb: 1, opacity: 0.85 }}>
+                    Timezone UTC{tzLabel}
                   </Typography>
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
