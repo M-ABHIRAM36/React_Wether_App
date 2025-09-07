@@ -671,11 +671,10 @@ const Settings = ({ onClose }) => {
                 <FormControl fullWidth>
                   <InputLabel>Color Scheme</InputLabel>
                   <Select
-                    value={preferences.colorScheme}
+                    value="blue"
                     disabled
-                    onChange={(e) => handlePreferenceChange('colorScheme', e.target.value)}
                   >
-                    <MenuItem value="default">
+                    <MenuItem value="blue">
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Palette size={16} style={{ marginRight: 8 }} />
                          Blue
