@@ -31,6 +31,12 @@ const Signup = ({ onSwitchToLogin }) => {
     password: '',
     confirmPassword: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
@@ -44,26 +50,48 @@ const Signup = ({ onSwitchToLogin }) => {
       [e.target.name]: e.target.value,
     });
     setError('');
+    const { name } = e.target;
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
+    const nextErrors = { name: '', email: '', password: '', confirmPassword: '' };
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const nameRegex = /^[A-Za-z][A-Za-z\s.'-]{1,48}$/; // 2-49 chars, letters first, allow spaces/'/-/.
+
     if (!formData.name.trim()) {
-      setError('Name is required');
-      return false;
+      nextErrors.name = 'Full name is required';
+    } else if (!nameRegex.test(formData.name.trim())) {
+      nextErrors.name = 'Enter a valid name (letters only)';
     }
     if (!formData.email.trim()) {
-      setError('Email is required');
-      return false;
+      nextErrors.email = 'Email is required';
+    } else if (!emailRegex.test(formData.email.trim())) {
+      nextErrors.email = 'Enter a valid email address';
+    } else {
+      const localPart = formData.email.trim().split('@')[0];
+      if (!/[A-Za-z]/.test(localPart)) {
+        nextErrors.email = 'Email must include letters before @';
+      }
     }
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return false;
+    if (!formData.password) {
+      nextErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      nextErrors.password = 'Password must be at least 6 characters';
     }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return false;
+    if (!formData.confirmPassword) {
+      nextErrors.confirmPassword = 'Confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      nextErrors.confirmPassword = 'Passwords do not match';
     }
-    return true;
+
+    setFieldErrors(nextErrors);
+    return (
+      !nextErrors.name &&
+      !nextErrors.email &&
+      !nextErrors.password &&
+      !nextErrors.confirmPassword
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -160,6 +188,8 @@ const Signup = ({ onSwitchToLogin }) => {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                error={Boolean(fieldErrors.name)}
+                helperText={fieldErrors.name || ' '}
                 sx={{ mb: 2 }}
                 InputProps={{
                   startAdornment: (
@@ -178,6 +208,8 @@ const Signup = ({ onSwitchToLogin }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                error={Boolean(fieldErrors.email)}
+                helperText={fieldErrors.email || ' '}
                 sx={{ mb: 2 }}
                 InputProps={{
                   startAdornment: (
@@ -196,6 +228,8 @@ const Signup = ({ onSwitchToLogin }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                error={Boolean(fieldErrors.password)}
+                helperText={fieldErrors.password || ' '}
                 sx={{ mb: 2 }}
                 InputProps={{
                   startAdornment: (
@@ -224,6 +258,8 @@ const Signup = ({ onSwitchToLogin }) => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                error={Boolean(fieldErrors.confirmPassword)}
+                helperText={fieldErrors.confirmPassword || ' '}
                 sx={{ mb: 3 }}
                 InputProps={{
                   startAdornment: (
