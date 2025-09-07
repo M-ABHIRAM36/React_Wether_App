@@ -643,11 +643,12 @@ const Settings = ({ onClose }) => {
                   <Select
                     value={preferences.theme}
                     onChange={(e) => handlePreferenceChange('theme', e.target.value)}
+                    disabled
                   >
                     <MenuItem value="auto">
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Palette size={16} style={{ marginRight: 8 }} />
-                        Auto (Weather-based)
+                        Auto
                       </Box>
                     </MenuItem>
                     <MenuItem value="light">
@@ -671,32 +672,16 @@ const Settings = ({ onClose }) => {
                   <InputLabel>Color Scheme</InputLabel>
                   <Select
                     value={preferences.colorScheme}
+                    disabled
                     onChange={(e) => handlePreferenceChange('colorScheme', e.target.value)}
                   >
                     <MenuItem value="default">
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Palette size={16} style={{ marginRight: 8 }} />
-                        Default Blue
+                         Blue
                       </Box>
                     </MenuItem>
-                    <MenuItem value="green">
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Palette size={16} style={{ marginRight: 8, color: '#4CAF50' }} />
-                        Nature Green
-                      </Box>
-                    </MenuItem>
-                    <MenuItem value="purple">
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Palette size={16} style={{ marginRight: 8, color: '#9C27B0' }} />
-                        Royal Purple
-                      </Box>
-                    </MenuItem>
-                    <MenuItem value="orange">
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Palette size={16} style={{ marginRight: 8, color: '#FF9800' }} />
-                        Sunset Orange
-                      </Box>
-                    </MenuItem>
+                    
                   </Select>
                 </FormControl>
               </Grid>
@@ -707,6 +692,7 @@ const Settings = ({ onClose }) => {
                   <Select
                     value={preferences.displayMode}
                     onChange={(e) => handlePreferenceChange('displayMode', e.target.value)}
+                    disabled
                   >
                     <MenuItem value="detailed">
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -735,6 +721,7 @@ const Settings = ({ onClose }) => {
                   <InputLabel>Weather Icons Style</InputLabel>
                   <Select
                     value={preferences.weatherIcons}
+                    disabled
                     onChange={(e) => handlePreferenceChange('weatherIcons', e.target.value)}
                   >
                     <MenuItem value="animated">
@@ -821,7 +808,8 @@ const Settings = ({ onClose }) => {
                   <InputLabel>Language</InputLabel>
                   <Select
                     value={preferences.language}
-                    onChange={(e) => handlePreferenceChange('language', e.target.value)}
+                    onChange={() => {}}
+                    disabled
                   >
                     <MenuItem value="english">
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
