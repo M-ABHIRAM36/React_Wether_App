@@ -18,6 +18,7 @@ import EnhancedSearchBox from './EnhancedSearchBox';
 import EnhancedInfoBox from './EnhancedInfoBox';
 import SplashScreen from './SplashScreen';
 import Settings from './Settings';
+import { usePreferences } from '../context/PreferencesContext';
 
 const EnhancedWeatherApp = () => {
   const [weatherData, setWeatherData] = useState(null);
@@ -26,69 +27,89 @@ const EnhancedWeatherApp = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const { user, logout } = useAuth();
+  const { preferences } = usePreferences();
+
+  const getUnitsParam = () => {
+    const t = preferences?.temperatureUnit;
+    if (t === 'fahrenheit') return 'imperial';
+    if (t === 'kelvin') return 'standard';
+    return 'metric';
+  };
+
+  const fetchWeatherByCoords = async (lat, lon) => {
+    try {
+      setLoading(true);
+      const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || process.env.MAIN_API_KEY;
+      const API_URL = import.meta.env.VITE_WEATHER_API_URL || process.env.MAIN_API_URL;
+      const units = getUnitsParam();
+      const response = await fetch(`${API_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${units}`);
+      const data = await response.json();
+      if (!response.ok) return;
+      const initialWeatherData = {
+        city: data.name,
+        country: data.sys.country,
+        temp: data.main.temp,
+        temMin: data.main.temp_min,
+        temMax: data.main.temp_max,
+        humidity: data.main.humidity,
+        pressure: data.main.pressure,
+        lon: data.coord.lon,
+        lat: data.coord.lat,
+        weather: data.weather[0].description,
+        weatherMain: data.weather[0].main,
+        windSpeed: data.wind?.speed || 0,
+        windDeg: data.wind?.deg || 0,
+        visibility: data.visibility ? data.visibility / 1000 : 0,
+        cloudiness: data.clouds?.all || 0,
+        sunrise: data.sys.sunrise,
+        sunset: data.sys.sunset,
+        timezone: data.timezone
+      };
+      setWeatherData(initialWeatherData);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Try to get weather for current location on app start
+    // After splash, honor startupLocation preference
     const initializeWeather = async () => {
-      if (navigator.geolocation) {
+      const startup = preferences?.startupLocation || 'current';
+      if (startup === 'current' && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
-            try {
-              setLoading(true);
-              const { latitude, longitude } = position.coords;
-              
-              const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || process.env.MAIN_API_KEY;
-              const API_URL = import.meta.env.VITE_WEATHER_API_URL || process.env.MAIN_API_URL;
-              
-              const response = await fetch(`${API_URL}?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`);
-              const data = await response.json();
-              
-              if (response.ok) {
-                const initialWeatherData = {
-                  city: data.name,
-                  country: data.sys.country,
-                  temp: data.main.temp,
-                  temMin: data.main.temp_min,
-                  temMax: data.main.temp_max,
-                  humidity: data.main.humidity,
-                  pressure: data.main.pressure,
-                  lon: data.coord.lon,
-                  lat: data.coord.lat,
-                  weather: data.weather[0].description,
-                  weatherMain: data.weather[0].main,
-                  windSpeed: data.wind?.speed || 0,
-                  windDeg: data.wind?.deg || 0,
-                  visibility: data.visibility ? data.visibility / 1000 : 0,
-                  cloudiness: data.clouds?.all || 0,
-                  sunrise: data.sys.sunrise,
-                  sunset: data.sys.sunset,
-                  timezone: data.timezone
-                };
-                
-                setWeatherData(initialWeatherData);
-              }
-            } catch (error) {
-              console.log('Failed to get initial weather data');
-            } finally {
-              setLoading(false);
-            }
+            const { latitude, longitude } = position.coords;
+            await fetchWeatherByCoords(latitude, longitude);
           },
-          (error) => {
-            console.log('Geolocation not available');
-            setLoading(false);
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 10000,
-            maximumAge: 300000
-          }
+          () => {},
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
         );
+      } else if (startup === 'last') {
+        try {
+          const saved = JSON.parse(localStorage.getItem('weatherApp_recentSearches') || '[]');
+          if (Array.isArray(saved) && saved.length > 0 && saved[0]?.lat && saved[0]?.lon) {
+            await fetchWeatherByCoords(saved[0].lat, saved[0].lon);
+          }
+        } catch {}
       }
     };
+    const timer = setTimeout(initializeWeather, 3000);
+    return () => clearTimeout(timer);
+  }, [preferences?.startupLocation]);
 
-    // Don't auto-fetch location immediately, wait for splash to finish
-    setTimeout(initializeWeather, 3000);
-  }, []);
+  useEffect(() => {
+    // Auto-refresh behavior
+    if (!preferences?.autoRefresh) return;
+    const minutes = parseInt(preferences?.refreshInterval || '30', 10);
+    if (!minutes || minutes <= 0) return;
+    const intervalMs = minutes * 60 * 1000;
+    const id = setInterval(() => {
+      if (weatherData?.lat && weatherData?.lon) {
+        fetchWeatherByCoords(weatherData.lat, weatherData.lon);
+      }
+    }, intervalMs);
+    return () => clearInterval(id);
+  }, [preferences?.autoRefresh, preferences?.refreshInterval, weatherData?.lat, weatherData?.lon]);
 
   const handleWeatherUpdate = (newWeatherData) => {
     setWeatherData(newWeatherData);
