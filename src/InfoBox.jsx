@@ -1,73 +1,109 @@
 import Card from '@mui/material/Card';
-// import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import "./infoBox.css";
+
 export default function InfoBox({info}){
     const getBackdropImage = (weatherMain, weatherDesc) => {
-        // More specific mapping based on weather description for better climate representation
+        // Check if it's day or night for better image selection
+        const currentHour = new Date().getHours();
+        const isDay = currentHour >= 6 && currentHour < 18;
+        
         const weatherDescLower = weatherDesc?.toLowerCase() || '';
         
-        // Specific weather conditions with climate-appropriate images
-        if (weatherDescLower.includes('thunderstorm') || weatherDescLower.includes('storm')) {
-            return "https://images.unsplash.com/photo-1472145246862-b24cf25c4a36?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('drizzle') || weatherDescLower.includes('light rain')) {
-            return "https://images.unsplash.com/photo-1541911087797-f89237bd95d2?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('rain') || weatherDescLower.includes('shower')) {
-            return "https://images.unsplash.com/photo-1527766833261-b9ad8397388e?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('snow') || weatherDescLower.includes('blizzard')) {
-            return "https://images.unsplash.com/photo-1511140973288-019d589d7aaf?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('clear') || weatherDescLower.includes('sunny')) {
-            return "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('clouds') || weatherDescLower.includes('overcast')) {
-            if (weatherDescLower.includes('scattered') || weatherDescLower.includes('broken')) {
-                return "https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1932&auto=format&fit=crop";
+        // Weather-specific images with DISTINCT URLs for each weather type
+        const weatherImages = {
+            // Thunderstorm - Storm images
+            thunderstorm: isDay 
+                ? "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            
+            // Rain - Rainy weather images
+            rain: isDay
+                ? "https://images.unsplash.com/photo-1433863448220-78aaa064ff47?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?q=60&w=800&auto=format&fit=crop",
+            drizzle: isDay
+                ? "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?q=60&w=800&auto=format&fit=crop",
+            
+            // Snow - Snowy landscape images
+            snow: isDay
+                ? "https://images.unsplash.com/photo-1551524164-6cf2ac531d83?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1512389142860-9c449e58a543?q=60&w=800&auto=format&fit=crop",
+            
+            // Clear/Sunny - Bright sky images
+            clear: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=60&w=800&auto=format&fit=crop",
+            sunny: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=60&w=800&auto=format&fit=crop",
+            
+            // Clouds - Cloudy sky images (DIFFERENT from clear/sunny)
+            clouds: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            overcast: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            scattered: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            broken: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            
+            // Mist/Fog - Foggy/misty images
+            mist: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            fog: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            
+            // Haze/Smoke - Hazy/smoky images
+            haze: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            smoke: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            
+            // Dust/Sand - Dusty/sandy images
+            dust: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+            sand: isDay
+                ? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop"
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=60&w=800&auto=format&fit=crop",
+        };
+        
+        // Check for specific weather conditions first
+        for (const [key, image] of Object.entries(weatherImages)) {
+            if (weatherDescLower.includes(key) || weatherMain?.toLowerCase() === key) {
+                return image;
             }
-            return "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('mist') || weatherDescLower.includes('fog')) {
-            return "https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('smoke') || weatherDescLower.includes('haze')) {
-            return "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('dust') || weatherDescLower.includes('sand')) {
-            return "https://images.unsplash.com/photo-1504270997636-07ddfbd48945?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('ash') || weatherDescLower.includes('volcanic')) {
-            return "https://images.unsplash.com/photo-1586778742846-0d58d661b0f1?q=80&w=1932&auto=format&fit=crop";
-        }
-        if (weatherDescLower.includes('squall') || weatherDescLower.includes('tornado')) {
-            return "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1932&auto=format&fit=crop";
         }
         
         // Fallback based on main weather category
-        const mainMap = {
-            Thunderstorm: "https://images.unsplash.com/photo-1472145246862-b24cf25c4a36?q=80&w=1932&auto=format&fit=crop",
-            Drizzle: "https://images.unsplash.com/photo-1541911087797-f89237bd95d2?q=80&w=1932&auto=format&fit=crop",
-            Rain: "https://images.unsplash.com/photo-1527766833261-b9ad8397388e?q=80&w=1932&auto=format&fit=crop",
-            Snow: "https://images.unsplash.com/photo-1511140973288-019d589d7aaf?q=80&w=1932&auto=format&fit=crop",
-            Clear: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1932&auto=format&fit=crop",
-            Clouds: "https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1932&auto=format&fit=crop",
-            Mist: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=1932&auto=format&fit=crop",
-            Smoke: "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?q=80&w=1932&auto=format&fit=crop",
-            Haze: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?q=80&w=1932&auto=format&fit=crop",
-            Dust: "https://images.unsplash.com/photo-1504270997636-07ddfbd48945?q=80&w=1932&auto=format&fit=crop",
-            Fog: "https://images.unsplash.com/photo-1468476775582-6bede20f356f?q=80&w=1932&auto=format&fit=crop",
-            Sand: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1932&auto=format&fit=crop",
-            Ash: "https://images.unsplash.com/photo-1586778742846-0d58d661b0f1?q=80&w=1932&auto=format&fit=crop",
-            Squall: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1932&auto=format&fit=crop",
-            Tornado: "https://images.unsplash.com/photo-1461511669078-d46bf351cd6e?q=80&w=1932&auto=format&fit=crop",
+        const mainWeatherMap = {
+            Thunderstorm: weatherImages.thunderstorm,
+            Drizzle: weatherImages.drizzle,
+            Rain: weatherImages.rain,
+            Snow: weatherImages.snow,
+            Clear: weatherImages.clear,
+            Clouds: weatherImages.clouds,
+            Mist: weatherImages.mist,
+            Smoke: weatherImages.smoke,
+            Haze: weatherImages.haze,
+            Dust: weatherImages.dust,
+            Fog: weatherImages.fog,
+            Sand: weatherImages.sand,
         };
         
-        return mainMap[weatherMain] || "https://images.unsplash.com/photo-1561484930-998b6a7b22e8?q=80&w=1932&auto=format&fit=crop";
+        return mainWeatherMap[weatherMain] || weatherImages.clear;
     };
 
     const iconUrl = info?.weatherIcon ? `https://openweathermap.org/img/wn/${info.weatherIcon}@2x.png` : null;
@@ -83,6 +119,7 @@ export default function InfoBox({info}){
                 sx={{ height: 140 }}
                 image={backdrop}
                 title={info.weatherMain || "Weather"}
+                loading="lazy"
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
