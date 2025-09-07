@@ -80,8 +80,17 @@ const EnhancedSearchBox = ({ onWeatherUpdate, loading: parentLoading }) => {
         lon: item.lon,
         display: `${item.name}${item.state ? `, ${item.state}` : ''}, ${item.country}`
       }));
-      
-      setCitySuggestions(suggestions);
+      // Deduplicate by name + state + country
+      const seen = new Set();
+      const unique = [];
+      for (const s of suggestions) {
+        const key = `${s.name}|${s.state}|${s.country}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          unique.push(s);
+        }
+      }
+      setCitySuggestions(unique);
     } catch (error) {
       console.error('Error fetching city suggestions:', error);
       setCitySuggestions([]);
