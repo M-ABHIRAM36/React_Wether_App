@@ -1,4 +1,4 @@
-name: React Weather App CI
+name: React Weather App Continoues Integration
 
 on:
   push:
