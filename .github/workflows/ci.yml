@@ -1,0 +1,41 @@
+name: React Weather App CI
+
+on:
+  push:
+    branches: [ "main" ]     # Run on push to main
+  pull_request:
+    branches: [ "main" ]     # Run on PRs to main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'   # Vite works well with Node 16/18+
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Run lint (optional but recommended)
+      - name: Run ESLint
+        run: npm run lint --if-present
+
+      # 5. Run tests (only if you have tests)
+      - name: Run tests
+        run: npm test --if-present
+
+      # 6. Build project
+      - name: Build project
+        run: npm run build
+        env:
+          VITE_MAIN_API_URL: ${{ secrets.VITE_MAIN_API_URL }}
+          VITE_MAIN_API_KEY: ${{ secrets.VITE_MAIN_API_KEY }}
