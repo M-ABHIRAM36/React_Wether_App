@@ -4,6 +4,17 @@
 
 ![WeatherScope Demo](https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800&auto=format&fit=crop&q=60)
 
+
+👥 Team Members & DevOps Roles
+23211a6774 - Coding (Frontend + Backend Development)
+23211a6777 - CI (Continuous Integration)
+23211a6792 - Planning (Project Architecture & Strategy)
+23211a6794 - Git Manager (Version Control & Repository Management)
+23211a67A0 - Monitoring (System Monitoring & Observability)
+23211a67B7 - Docker Manager (Containerization & Deployment)
+23211a67C3 - CD (Continuous Deployment)
+
+
 ## 🚀 Features
 
 ### 🔐 Authentication System
