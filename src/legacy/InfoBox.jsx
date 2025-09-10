@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import "./infoBox.css";
+import "./InfoBox.css";
 export default function InfoBox({info}){
     const Img_Url = "https://images.unsplash.com/photo-1561484930-998b6a7b22e8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGZldyUyMGNsb3VkeSUyMHdlYXRoZXJ8ZW58MHx8MHx8fDA%3D";
     // let info =  {  now this is sended by from weatherApp is props as info only name see in InfoBox() here..up..
