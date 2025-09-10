@@ -28,7 +28,7 @@ Real-time API integration
 Create a `.env` in the project root with:
 ```bash
 VITE_MAIN_API_URL=https://api.openweathermap.org/data/2.5/weather
-VITE_MAIN_API_KEY=YOUR_API_KEY
+VITE_MAIN_API_KEY=YOUR_API_KEY // To get this API url, Browse for openweather >> signup >> Get an API key
 ```
 Note: `.env` is already git-ignored to keep your API key private. Commit a `.env.example` instead when sharing.
 
