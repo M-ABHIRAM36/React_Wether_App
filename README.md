@@ -37,7 +37,7 @@ Note: `.env` is already git-ignored to keep your API key private. Commit a `.env
 ## ⚡ How to Run Locally
 ```bash
 git clone <your-repo-url>
-cd React_Wether_App-main
+cd React_Wether_App
 npm install
 npm run dev
 ```
