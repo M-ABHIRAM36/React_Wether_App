@@ -357,6 +357,56 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+
+🐳 Docker Containerization & Deployment By 23211A67B7
+Branch: docker
+
+🛠️ Summary of Changes
+Dockerfile Added
+Implemented a multi-stage Dockerfile for optimized builds:
+
+Stage 1 (Builder): Used node:18-alpine to install dependencies and build the React app.
+
+Stage 2 (Runtime): Used lightweight nginx:alpine to serve the production build.
+This approach significantly reduced the final image size and improved runtime performance.
+
+Docker Compose Setup
+Created docker-compose.yml for simplified container orchestration.
+
+Configured the React app service with:
+
+Auto-restart policy (restart: always)
+
+Port mapping (3000:80) for local access
+
+Container name react-weather-app-container
+
+Local Build & Run
+Built the image with:
+
+docker build -t react-weather-app .
+
+Ran locally with:
+
+docker run -d -p 3000:80 react-weather-app
+
+Verified functionality at: http://localhost:3000
+
+DockerHub Integration
+Tagged and pushed the image to DockerHub:
+
+docker tag react-weather-app mytreya2005/react-weather-app:latest
+docker push mytreya2005/react-weather-app:latest
+
+Final public image available at: 👉 https://www.google.com/search?q=dockerhub.com/mytreya2005/react-weather-app
+
+Outcome
+The React Weather Application is now fully containerized and portable. Team members and reviewers can run the app instantly using a single command:
+
+docker run -d -p 3000:80 mytreya2005/react-weather-app:latest
+
+This ensures consistency across environments, faster setup, and a production-ready deployment workflow.
+
 <div align="center">
   <p><strong>Built with ❤️ for weather enthusiasts</strong></p>
   <p>WeatherScope © 2024</p>
