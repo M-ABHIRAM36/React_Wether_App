@@ -398,7 +398,7 @@ Tagged and pushed the image to DockerHub:
 docker tag react-weather-app mytreya2005/react-weather-app:latest
 docker push mytreya2005/react-weather-app:latest
 
-Final public image available at: 👉 https://www.google.com/search?q=dockerhub.com/mytreya2005/react-weather-app
+Final public image available at: 👉 https://hub.docker.com/r/mytreya2005/react-wether-app
 
 Outcome
 The React Weather Application is now fully containerized and portable. Team members and reviewers can run the app instantly using a single command:
