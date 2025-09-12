@@ -1,9 +1,8 @@
-# WeatherScope 🌤️
+A React Weather App # WeatherScope 🌤️
 
 > Your Personal Weather Companion - A modern, feature-rich weather application built with React and Material-UI
 
 ![WeatherScope Demo](https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=800&auto=format&fit=crop&q=60)
-
 
 ## 👥 Team Members & DevOps Roles
 - **23211a6774** - Coding (Frontend + Backend Development)
@@ -11,9 +10,8 @@
 - **23211a6792** - Planning (Project Architecture & Strategy)
 - **23211a6794** - Git Manager (Version Control & Repository Management)
 - **23211a67A0** - Monitoring (System Monitoring & Observability)
-- **23211a67B7** - Docker Manager (Containerization & Deployment)
+- **23211a67B7** - Docker Manager (Containerization)
 - **23211a67C3** - CD (Continuous Deployment)
-
 
 ## 🚀 Features
 
@@ -288,10 +286,14 @@ The app uses a custom Material-UI theme with:
 ```bash
 # Run all tests
 npm test
+```
 
+```bash
 # Run tests in watch mode
 npm test -- --watch
+```
 
+```bash
 # Run tests with coverage
 npm test -- --coverage
 ```
@@ -345,7 +347,6 @@ npm test -- --coverage
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-
 ## 🙏 Acknowledgments
 
 - [OpenWeather API](https://openweathermap.org/) - Weather data provider
@@ -357,11 +358,60 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## 🐳 Docker Containerization By 23211A67B7
+**Branch**: docker
+
+### 🛠️ Summary of Changes
+**Dockerfile Added**
+Implemented a multi-stage Dockerfile for optimized builds:
+
+Stage 1 (Builder): Used `node:18-alpine` to install dependencies and build the React app.
+
+Stage 2 (Runtime): Used lightweight `nginx:alpine` to serve the production build.
+This approach significantly reduced the final image size and improved runtime performance.
+
+### Docker Compose Setup
+Created `docker-compose.yml` for simplified container orchestration.
+
+Configured the React app service with:
+
+Auto-restart policy (`restart: always`)
+
+Port mapping (`3000:80`) for local access
+
+Container name `react-weather-app-container`
+
+### Local Build & Run
+Built the image with:
+```bash
+docker build -t react-wether-app .
+```
+
+Ran locally with:
+```bash
+docker run -d -p 3000:80 react-wether-app
+```
+
+Verified functionality at: http://localhost:3000
+
+### DockerHub Integration
+Tagged and pushed the image to DockerHub:
+```bash
+docker tag react-weather-app mytreya2005/react-wether-app:latest
+docker push mytreya2005/react-wether-app:latest
+```
+
+Final public image available at: 👉 https://hub.docker.com/r/mytreya2005/react-wether-app
+
+### Outcome
+The React Weather Application is now fully containerized and portable. Team members and reviewers can run the app instantly using a single command:
+```bash
+docker run -d -p 3000:80 mytreya2005/react-wether-app:latest
+```
+
+This ensures consistency across environments, faster setup, and a production-ready deployment workflow.
+
 <div align="center">
   <p><strong>Built with ❤️ for weather enthusiasts</strong></p>
   <p>WeatherScope © 2024</p>
 </div>
-
-# React + Vite
-
-A React Weather App 
