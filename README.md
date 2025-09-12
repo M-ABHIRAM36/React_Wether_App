@@ -10,7 +10,7 @@ A React Weather App # WeatherScope 🌤️
 - **23211a6792** - Planning (Project Architecture & Strategy)
 - **23211a6794** - Git Manager (Version Control & Repository Management)
 - **23211a67A0** - Monitoring (System Monitoring & Observability)
-- **23211a67B7** - Docker Manager (Containerization & Deployment)
+- **23211a67B7** - Docker Manager (Containerization)
 - **23211a67C3** - CD (Continuous Deployment)
 
 ## 🚀 Features
@@ -358,7 +358,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🐳 Docker Containerization & Deployment By 23211A67B7
+## 🐳 Docker Containerization By 23211A67B7
 **Branch**: docker
 
 ### 🛠️ Summary of Changes
