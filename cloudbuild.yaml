@@ -1,0 +1,20 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/devops-poject/react-wether-app:latest', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/devops-poject/react-wether-app:latest']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'react-wether-app',
+        '--image', 'gcr.io/devops-poject/react-wether-app:latest',
+        '--platform', 'managed',
+        '--region', 'us-central1',
+        '--allow-unauthenticated'
+      ]
+
+images:
+  - 'gcr.io/devops-poject/react-wether-app:latest'
