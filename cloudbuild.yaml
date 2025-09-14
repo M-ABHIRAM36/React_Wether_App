@@ -1,20 +1,27 @@
 steps:
+  # Build Docker image with build-time env variables for Vite
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/devops-poject/react-wether-app:latest', '.']
+    args: ['build', '-t', 'gcr.io/devops-project/react-wether-app:latest', '.']
+    env:
+      - VITE_WEATHER_API_KEY=b95be9570e48d0177f413ef0726e6cbd
+      - VITE_WEATHER_API_URL=https://api.openweathermap.org/data/2.5/weather
+      - VITE_GEO_API_URL=https://api.openweathermap.org/geo/1.0/direct
 
+  # Push Docker image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/devops-poject/react-wether-app:latest']
+    args: ['push', 'gcr.io/devops-project/react-wether-app:latest']
 
+  # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       [
         'run', 'deploy', 'react-wether-app',
-        '--image', 'gcr.io/devops-poject/react-wether-app:latest',
+        '--image', 'gcr.io/devops-project/react-wether-app:latest',
         '--platform', 'managed',
         '--region', 'us-central1',
         '--allow-unauthenticated'
       ]
 
 images:
-  - 'gcr.io/devops-poject/react-wether-app:latest'
+  - 'gcr.io/devops-project/react-wether-app:latest'
