@@ -1,11 +1,12 @@
 steps:
-  # Build Docker image with build-time env variables for Vite
+  # Build Docker image with secret for Vite
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/devops-project/react-wether-app:latest', '.']
     env:
-      - VITE_WEATHER_API_KEY=${_WEATHER_API_KEY}
+      - VITE_WEATHER_API_KEY=$_WEATHER_API_KEY
       - VITE_WEATHER_API_URL=https://api.openweathermap.org/data/2.5/weather
       - VITE_GEO_API_URL=https://api.openweathermap.org/geo/1.0/direct
+    secretEnv: ['_WEATHER_API_KEY']
 
   # Push Docker image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -25,3 +26,7 @@ steps:
 
 images:
   - 'gcr.io/devops-project/react-wether-app:latest'
+
+secrets:
+- secretEnv:
+    _WEATHER_API_KEY: projects/devops-project/secrets/WEATHER_API_KEY/versions/latest
