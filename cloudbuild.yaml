@@ -3,7 +3,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/devops-project/react-wether-app:latest', '.']
     env:
-      - VITE_WEATHER_API_KEY=b95be9570e48d0177f413ef0726e6cbd
+      - VITE_WEATHER_API_KEY=${_WEATHER_API_KEY}
       - VITE_WEATHER_API_URL=https://api.openweathermap.org/data/2.5/weather
       - VITE_GEO_API_URL=https://api.openweathermap.org/geo/1.0/direct
 
