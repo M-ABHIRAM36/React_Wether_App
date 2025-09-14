@@ -280,7 +280,7 @@ The app uses a custom Material-UI theme with:
 - **Minimal Re-renders**: Efficient state management
 - **Bundle Optimization**: Vite's optimized bundling
 
-## 🧪 Testing
+## 🧪 Testing & CI
 
 ### Running Tests
 ```bash
@@ -297,6 +297,19 @@ npm test -- --watch
 # Run tests with coverage
 npm test -- --coverage
 ```
+
+### Continuous Integration
+Basic CI pipeline is configured with GitHub Actions:
+
+- **Triggers**: On push to main/develop branches and pull requests
+- **Steps**:
+  1. Checkout code
+  2. Setup Node.js 18 with npm caching
+  3. Install dependencies (`npm ci`)
+  4. Run linter (`npm run lint`)
+  5. Build project (`npm run build`)
+
+The CI workflow is located at `.github/workflows/ci.yml` and runs automatically on every push and pull request.
 
 ## 🤝 Contributing
 
